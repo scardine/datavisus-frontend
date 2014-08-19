@@ -1,65 +1,58 @@
-var app = angular.module('Datavisus', ['ui.bootstrap', 'ngCookies', 'ngSanitize']);
+angular.module('Datavisus', ['ui.bootstrap', 'ngCookies', 'ngSanitize'])
+    .constant('apiRoot', 'http://datavisus/servicos/v1/')
+    .controller('MasterCtrl', function($scope, $cookieStore, $sce, ChartModel) {
+        /**
+         * Sidebar Toggle & Cookie Control
+         *
+         */
+        var mobileView = 992;
+        var Chart = new ChartModel();
+        $scope.Chart = Chart;
+        $scope.charts = Chart.list();
 
-/**
- * Master Controller
- */
-app.controller('MasterCtrl', function($scope, $cookieStore, $sce) {
-
-    /**
-     * Sidebar Toggle & Cookie Control
-     *
-     */
-    var mobileView = 992;
-
-    $scope.charts = [
+        $scope.chartUrl = function (chart)
         {
-            isCollapsed: false,
-            id: 1101,
-            url: 'http://datavisus.seade.gov.br/document/1101'
-        }
-    ];
+            return $sce.trustAsResourceUrl(
+                'http://datavisus.seade.gov.br/document/' + chart.id + '?ts=' + (chart._ts == undefined ? '' : chart._ts)
+            )
+        };
 
-    $scope.chartUrl = function (chart)
-    {
-        return $sce.trustAsResourceUrl('http://datavisus.seade.gov.br/document/' + chart.id)
-    };
+        $scope.getWidth = function() { return window.innerWidth; };
 
-    $scope.getWidth = function() { return window.innerWidth; };
-
-    $scope.$watch($scope.getWidth, function(newValue, oldValue)
-    {
-        if(newValue >= mobileView)
+        $scope.$watch($scope.getWidth, function(newValue, oldValue)
         {
-            if(angular.isDefined($cookieStore.get('toggle')))
+            if(newValue >= mobileView)
             {
-                if($cookieStore.get('toggle') == false)
+                if(angular.isDefined($cookieStore.get('toggle')))
                 {
-                    $scope.toggle = false;
-                }            
+                    if($cookieStore.get('toggle') == false)
+                    {
+                        $scope.toggle = false;
+                    }
+                    else
+                    {
+                        $scope.toggle = true;
+                    }
+                }
                 else
                 {
                     $scope.toggle = true;
                 }
             }
-            else 
+            else
             {
-                $scope.toggle = true;
+                $scope.toggle = false;
             }
-        }
-        else
+
+        });
+
+        $scope.toggleSidebar = function()
         {
-            $scope.toggle = false;
-        }
+            $scope.toggle = ! $scope.toggle;
 
+            $cookieStore.put('toggle', $scope.toggle);
+        };
+
+        window.onresize = function() { $scope.$apply(); };
     });
-
-    $scope.toggleSidebar = function() 
-    {
-        $scope.toggle = ! $scope.toggle;
-
-        $cookieStore.put('toggle', $scope.toggle);
-    };
-
-    window.onresize = function() { $scope.$apply(); };
-});
 
