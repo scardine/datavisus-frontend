@@ -1,50 +1,59 @@
 angular.module('Datavisus')
-    .factory('ChartModel', function($http, apiRoot) {
-        var Chart = function() {
+    .factory('Model', function($http, apiRoot) {
+        var Model = function(endpoint) {
             var self = this;
-            self._errors = [];
-            self._error = function(data, status, xhr) {
-                self._errors.push(data);
+            self.errors = [];
+            self.error = function(data, status, xhr) {
+                self.errors.push(data);
             };
+			if(typeof endpoint == 'string') {
+				self.endpoint = {
+					list: endpoint,
+					load: endpoint,
+					save: endpoint
+				}
+			} else {
+				self.endpoint = {};
+				self.endpoint = angular.extend(self.endpoint, endpoint);
+			}
         };
 
-        Chart.prototype.list = function() {
+        Model.prototype.list = function() {
             var ref = [];
             var self = this;
-            return $http({
-                url: apiRoot + 'admin_documentos/',
+            $http({
+                url: apiRoot + self.endpoint.list,
                 method: 'GET'
             }).success(function(data, status, xhr) {
                 ref.push.apply(ref, data);
-            }).error(self._error);
+            }).error(self.error);
             return ref;
         }
 
-        Chart.prototype.load = function(id) {
+        Model.prototype.load = function(id) {
             var self = this;
             var ref = {};
             $http({
-                url: apiRoot + 'documentos/' + id,
+                url: apiRoot + self.endpoint.load + id,
                 method: 'GET'
             }).success(function(data, status, xhr) {
                 angular.extend(ref, data);
-                ref.id = Math.abs(id);
-            }).error(self._error);
+            }).error(self.error);
             return ref;
         };
 
-        Chart.prototype.save = function(data) {
+        Model.prototype.save = function(data) {
             var self = this;
             var ref = {};
             $http({
-                url: apiRoot + 'documentos/' + id,
+                url: apiRoot + self.endpoint.save + data.id,
                 method: 'PUT',
                 data: data
             }).success(function(data, status, xhr) {
                 angular.extend(ref, data);
-            }).error(self._error);
+            }).error(self.error);
             return ref;
         };
 
-        return Chart;
+        return Model;
     });

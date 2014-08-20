@@ -1,23 +1,31 @@
 angular.module('Datavisus', ['ui.bootstrap', 'ngCookies', 'ngSanitize'])
-    .constant('apiRoot', 'http://datavisus/servicos/v1/')
-    .controller('MasterCtrl', function($scope, $cookieStore, $sce, ChartModel) {
+    .constant('apiRoot', 'http://datavisus-desenv.seade.net/servicos/v1/')
+    .controller('MasterCtrl', function($scope, $cookieStore, $sce, $window, Model) {
         /**
          * Sidebar Toggle & Cookie Control
          *
          */
         var mobileView = 992;
-        var Chart = new ChartModel();
-        $scope.Chart = Chart;
-        $scope.charts = Chart.list();
+        var Chart = new Model({list: 'admin_documentos/', load: 'documentos/', save: 'documentos/'});
+		var Template = new Model('admin_templates');
+		
+		$scope.Chart = Chart;
+        $scope.chart_list = [];
+		$scope.templateWindow = {
+			isCollapsed: false,
+			isVisible: false,
+			current: undefined,
+			list: Template.list()
+		};
 
         $scope.chartUrl = function (chart)
         {
             return $sce.trustAsResourceUrl(
-                'http://datavisus.seade.gov.br/document/' + chart.id + '?ts=' + (chart._ts == undefined ? '' : chart._ts)
+                'http://datavisus-desenv.seade.net/documentos/' + chart.id + '?ts=' + (chart._ts == undefined ? '' : chart._ts)
             )
         };
 
-        $scope.getWidth = function() { return window.innerWidth; };
+        $scope.getWidth = function() { return $window.innerWidth; };
 
         $scope.$watch($scope.getWidth, function(newValue, oldValue)
         {
@@ -53,6 +61,6 @@ angular.module('Datavisus', ['ui.bootstrap', 'ngCookies', 'ngSanitize'])
             $cookieStore.put('toggle', $scope.toggle);
         };
 
-        window.onresize = function() { $scope.$apply(); };
+        $window.onresize = function() { $scope.$apply(); };
     });
 

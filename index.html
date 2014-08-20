@@ -42,7 +42,7 @@
           <a href="#">Carregar <span class="menu-icon fa fa-search"></span></a>
         </li>
         <li class="sidebar-list">
-          <a href="#">Criar novo <span class="menu-icon fa fa-plus"></span></a>
+          <a href="#" ng-click="templateWindow.isVisible = !templateWindow.isVisible">Criar novo <span class="menu-icon fa fa-plus"></span></a>
         </li>
         <li class="sidebar-list">
           <a href="#">Sair <span class="menu-icon fa fa-sign-out"></span></a>
@@ -148,13 +148,36 @@
           </div>
         </div>
 
-        <div class="row" ng-repeat="chart in charts">
+		<div class="row" ng-show="templateWindow.isVisible">
+			<div class="col-lg-12">
+				<div class="widget">
+					<div class="widget-title">
+						<i class="fa fa-plus"></i>
+						Criar novo gráfico: escolha o modelo na lista abaixo.
+                        <a href="" class="pull-right" ng-click="templateWindow.isVisible = false"><i class="fa fa-times"></i></a>
+                        <a href="" class="pull-right" ng-click="templateWindow.isCollapsed = !templateWindow.isCollapsed"><i class="fa" ng-class="{'fa-angle-down': templateWindow.isCollapsed, 'fa-angle-up': !templateWindow.isCollapsed}"></i></a>
+					</div>
+					<div class="widget-body row" collapse="templateWindow.isCollapsed">
+						<div class="col-lg-3">
+							<ul class="nav nav-pills nav-stacked">
+								<li ng-repeat="template in templateWindow.list" ng-hover="templateWindow.current">
+									<a href="">
+										{{ template.nome }}
+									</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+        <div class="row" ng-repeat="chart in chart_list">
             <div class="col-lg-12">
                 <div class="widget">
                     <div class="widget-title">
                         <i class="fa fa-bar-chart-o"></i>
                         Objeto #{{ chart.id }}
-                        <a href="" class="pull-right" ng-click="charts.splice($index, 1)"><i class="fa fa-times"></i></a>
+                        <a href="" class="pull-right" ng-click="chart_list.splice($index, 1)"><i class="fa fa-times"></i></a>
                         <a href="" class="pull-right" ng-click="chart.isCollapsed = !chart.isCollapsed"><i class="fa" ng-class="{'fa-angle-down': chart.isCollapsed, 'fa-angle-up': !chart.isCollapsed}"></i></a>
                     </div>
                     <div class="widget-body" collapse="chart.isCollapsed">
