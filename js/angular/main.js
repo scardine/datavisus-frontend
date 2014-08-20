@@ -10,7 +10,7 @@ angular.module('Datavisus', ['ui.bootstrap', 'ngCookies', 'ngSanitize'])
 		var Template = new Model('admin_templates');
 		
 		$scope.Chart = Chart;
-        $scope.chart_list = [];
+        $scope.chart_list = [ Chart.load(-19) ];
 		$scope.templateWindow = {
 			isCollapsed: false,
 			isVisible: false,

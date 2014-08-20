@@ -45,11 +45,8 @@ angular.module('Datavisus')
         Model.prototype.save = function(data) {
             var self = this;
             var ref = {};
-            $http({
-                url: apiRoot + self.endpoint.save + data.id,
-                method: 'PUT',
-                data: data
-            }).success(function(data, status, xhr) {
+            $http.put(apiRoot + self.endpoint.save, data)
+            .success(function(data, status, xhr) {
                 angular.extend(ref, data);
             }).error(self.error);
             return ref;
